@@ -1,0 +1,8 @@
+README.md
+pyproject.toml
+magi_system.egg-info/PKG-INFO
+magi_system.egg-info/SOURCES.txt
+magi_system.egg-info/dependency_links.txt
+magi_system.egg-info/entry_points.txt
+magi_system.egg-info/requires.txt
+magi_system.egg-info/top_level.txt

@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "magi-system"
+version = "1.0.0"
+authors = [
+  { name = "SinsuSquid" },
+]
+description = "A high-fidelity NERV MAGI Supercomputer TUI implementation."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "ollama",
+    "rich",
+    "prompt_toolkit",
+]
+
+[project.scripts]
+magi = "magi_system:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["magi_system.py", "config.py", "ui_layouts.py", "orchestrator.py", "main.py"]
