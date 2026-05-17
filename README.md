@@ -9,6 +9,8 @@
 
 A high-fidelity terminal implementation of the **MAGI Supercomputer** from Neon Genesis Evangelion. This system uses three distinct LLM personas (Melchior, Balthasar, and Casper) to evaluate tactical dilemmas and reach a consensus through parallel neural synchronization.
 
+![MAGI Interface](screenshots/Screenshot1.png)
+
 ## 🕹️ Visual Interface (NERV Aesthetic)
 
 The MAGI system features a specialized TUI (Terminal User Interface) designed with a strict NERV tactical blueprint:
