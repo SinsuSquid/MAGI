@@ -42,9 +42,17 @@ pip install ollama rich prompt_toolkit
 ```
 
 ### Execution
+Launch the interactive Command Center:
 ```bash
-python magi_system.py
+magi
 ```
+
+**Tactical Bypass (Single Query):**
+Run a dilemma directly from the shell without entering the loop:
+```bash
+magi --prompt "Should I skip sleep tonight to finish coding?"
+```
+*Or use the short flag:* `magi -p "..."`
 
 ## 📊 Consensus Codes
 - **CODE 01:** UNANIMOUS CONSENSUS (3-0) - OPERATION APPROVED

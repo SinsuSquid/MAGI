@@ -2,6 +2,7 @@ import time
 import threading
 import sys
 import re
+import argparse
 
 try:
     import ollama
@@ -44,7 +45,6 @@ SYSTEM_PROMPTS = {
 
 def get_command_center_display():
     """Builds the NERV Command Center dashboard UI."""
-    # Header row
     header_table = Table.grid(expand=True)
     header_table.add_column(justify="left")
     header_table.add_column(justify="right")
@@ -53,7 +53,6 @@ def get_command_center_display():
         f"[bold {NERV_AMBER}][NET_STATUS: FULL_TELEMETRY][/bold {NERV_AMBER}]"
     )
 
-    # Main content area (Logo + Status)
     magi_logo = f"""
 [bold {NERV_RED}]
   ███╗   ███╗ █████╗  ██████╗ ██╗
@@ -81,7 +80,6 @@ def get_command_center_display():
     main_table.add_column(ratio=1)
     main_table.add_row(Align.center(magi_logo), Align.left(status_text))
 
-    # Assemble layout
     dashboard = Table.grid(expand=True)
     dashboard.add_row(header_table)
     dashboard.add_row(Panel(main_table, border_style=NERV_AMBER, box=box.SQUARE))
@@ -120,7 +118,6 @@ def update_magi_screen(layout: Layout, query: str, final_verdict: str = "SYNCHRO
             Panel(Align.left(content), title=f"[bold {data['color']}]{title}[/bold {data['color']}]", border_style=data['color'], box=box.SQUARE, padding=(1, 2))
         )
     
-    # 3. Final Verdict Footer Display
     footer_text = Text.from_markup(final_verdict, justify="center")
     layout["footer"].update(Panel(footer_text, title=f"[bold {NERV_AMBER}]🤖 CONSENSUS ENGINE[/bold {NERV_AMBER}]", border_style=NERV_AMBER, box=box.SQUARE))
 
@@ -157,13 +154,43 @@ def calculate_final_verdict() -> str:
     else:
         return f"[bold {NERV_RED}]❌ CODE 03: OPERATION REJECTED BY MAGI (INSUFFICIENT CONSENSUS)[/bold {NERV_RED}]"
 
+def run_consensus(user_query: str):
+    """Executes the consensus engine for a single dilemma."""
+    for core in core_data:
+        core_data[core] = {"text": "Awaiting input...", "vote": "STANDBY", "color": NERV_AMBER}
+        
+    layout = make_magi_layout()
+    threads = []
+    for core in ["MELCHIOR", "BALTHASAR", "CASPER"]:
+        t = threading.Thread(target=query_core, args=(core, user_query))
+        threads.append(t)
+        t.start()
+
+    with Live(layout, refresh_per_second=10, screen=True) as live:
+        while any(t.is_alive() for t in threads):
+            update_magi_screen(layout, user_query)
+            time.sleep(0.1)
+        final_verdict = calculate_final_verdict()
+        update_magi_screen(layout, user_query, final_verdict)
+        return final_verdict
+
 def main():
+    parser = argparse.ArgumentParser(description="MAGI Supercomputer Strategy System")
+    parser.add_argument("-p", "--prompt", type=str, help="Dilemma to process directly via command line")
+    args = parser.parse_args()
+
     console = Console()
-    
-    # Initialize prompt_toolkit session with Vi mode
+
+    if args.prompt:
+        final_verdict = run_consensus(args.prompt)
+        # Display the result in the scrollback buffer after the TUI closes
+        console.print(f"\n[bold {NERV_AMBER}]" + "="*50 + f"[/bold {NERV_AMBER}]")
+        console.print(f"[bold {NERV_WHITE}]MAGI FINAL VERDICT:[/bold {NERV_WHITE}] {final_verdict}")
+        console.print(f"[bold {NERV_AMBER}]" + "="*50 + f"[/bold {NERV_AMBER}]\n")
+        return
+
+    # Initialize prompt_toolkit session for interactive mode
     session = PromptSession(editing_mode=EditingMode.VI)
-    
-    # Custom style for the prompt to match NERV Amber
     prompt_style = PromptStyle.from_dict({
         'prompt': f'bold {NERV_AMBER}',
         'input': NERV_WHITE,
@@ -172,13 +199,10 @@ def main():
     while True:
         console.clear()
         console.print(get_command_center_display())
-        
-        # 1. Get the dilemma from the user using prompt_toolkit (Vi mode)
         console.print(f"\n[bold {NERV_AMBER}]🔮 Initialize MAGI System Prompt Sequence...[/bold {NERV_AMBER}]")
         console.print(f"[dim {NERV_WHITE}](Vim mode active: Press Esc for command mode)[/dim {NERV_WHITE}]")
         
         try:
-            # Replaces Prompt.ask for vim bindings
             user_query = session.prompt(
                 [('class:prompt', 'Enter tactical dilemma '), ('class:prompt', '(or \'exit\'): ')],
                 style=prompt_style
@@ -194,22 +218,11 @@ def main():
             break
         if not user_query.strip(): continue
 
-        for core in core_data: core_data[core] = {"text": "Awaiting input...", "vote": "STANDBY", "color": NERV_AMBER}
-        layout = make_magi_layout()
-        threads = []
-        for core in ["MELCHIOR", "BALTHASAR", "CASPER"]:
-            t = threading.Thread(target=query_core, args=(core, user_query))
-            threads.append(t)
-            t.start()
-
-        with Live(layout, refresh_per_second=10, screen=True) as live:
-            while any(t.is_alive() for t in threads):
-                update_magi_screen(layout, user_query)
-                time.sleep(0.1)
-            final_verdict = calculate_final_verdict()
-            update_magi_screen(layout, user_query, final_verdict)
-            live.console.print(f"\n[bold {NERV_WHITE}]Press Enter to continue...[/bold {NERV_WHITE}]")
-            input()
+        final_verdict = run_consensus(user_query)
+        
+        # In interactive mode, we wait for input to keep the result on screen
+        print(f"\n[bold {NERV_WHITE}]Press Enter to continue...[/bold {NERV_WHITE}]")
+        input()
 
 if __name__ == "__main__":
     main()
