@@ -3,6 +3,7 @@ import threading
 import sys
 import re
 import argparse
+import random
 
 try:
     import ollama
@@ -27,6 +28,28 @@ NERV_AMBER = "#ff9900"
 NERV_GREEN = "#00ff66"
 NERV_RED = "#ff0033"
 NERV_WHITE = "#e0e0e0"
+
+NERV_STATUS_MESSAGES = [
+    "LCL DENSITY: OPTIMAL (99.8%)",
+    "EVA UNIT-01 STATUS: STANDBY",
+    "ENTRY PLUG DEPTH: NORMAL",
+    "REI AYANAMI: IN MEDICAL BAY",
+    "MISATO KATSURAGI: ORDERED RAMEN AGAIN",
+    "GENDO IKARI: OBSERVING...",
+    "PROBABILITY OF SYNCHRONIZATION: 85.3%",
+    "PEN PEN: IN THE REFRIGERATOR",
+    "LONGINUS SPEAR: MOON ORBIT STABLE",
+    "INTERNAL POWER: 04:59 REMAINING",
+    "S.C. MAGI: NEURAL LINK STABLE",
+]
+
+SECRET_PHRASES = {
+    "get in the robot": "SHINJI, GET IN THE ROBOT OR REI WILL HAVE TO DO IT AGAIN.",
+    "pattern blue": "BLOOD TYPE: BLUE! IT'S AN ANGEL! ALL HANDS TO BATTLE STATIONS!",
+    "human instrumentality project": "SEELE AUTHORIZATION REQUIRED. ACCESS DENIED. GENDO IS WATCHING YOU.",
+    "third impact": "INITIATING INSTRUMENTALITY... JUST KIDDING. [dim]Unless?[/dim]",
+    "cruel angel's thesis": "🎶 ZANKOKU NA TENSHI NO YOU NI... 🎶",
+}
 
 # Global state dictionary
 core_data = {
@@ -73,6 +96,11 @@ def get_command_center_display():
         f"[CORE_3: CASPER]    ... [bold {NERV_GREEN}]🟢 100% SYNC[/bold {NERV_GREEN}]\n\n"
     )
     status_text.append(Text.from_markup(sync_msg))
+    
+    # Random Evangelion status message
+    random_status = random.choice(NERV_STATUS_MESSAGES)
+    status_text.append(f"LOG: {random_status}\n", style=f"{NERV_AMBER} italic")
+    
     status_text.append("DEFENSE: ABSOLUTE TERROR FIELD ACTIVE", style=f"bold {NERV_RED}")
 
     main_table = Table.grid(expand=True, padding=(0, 2))
@@ -182,6 +210,12 @@ def main():
     console = Console()
 
     if args.prompt:
+        # EASTER EGG: Secret Phrase detection
+        for phrase, response in SECRET_PHRASES.items():
+            if phrase in args.prompt.lower():
+                console.print(f"\n[bold {NERV_RED}]⚠️  SYSTEM INTERRUPT: {response}[/bold {NERV_RED}]")
+                return
+
         final_verdict = run_consensus(args.prompt)
         # Display the result in the scrollback buffer after the TUI closes
         console.print(f"\n[bold {NERV_AMBER}]" + "="*50 + f"[/bold {NERV_AMBER}]")
@@ -217,6 +251,18 @@ def main():
             console.print(f"[bold {NERV_AMBER}]>> SHUTTING DOWN NEURAL LINK...[/bold {NERV_AMBER}]")
             break
         if not user_query.strip(): continue
+
+        # EASTER EGG: Secret Phrase detection
+        phrase_match = False
+        for phrase, response in SECRET_PHRASES.items():
+            if phrase in user_query.lower():
+                console.print(f"\n[bold {NERV_RED}]⚠️  SYSTEM INTERRUPT: {response}[/bold {NERV_RED}]")
+                time.sleep(2)
+                phrase_match = True
+                break
+        
+        if phrase_match:
+            continue
 
         final_verdict = run_consensus(user_query)
         
