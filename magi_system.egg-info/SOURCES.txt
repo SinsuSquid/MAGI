@@ -1,5 +1,11 @@
 README.md
 pyproject.toml
+magi/__init__.py
+magi/config.py
+magi/magi_system.py
+magi/main.py
+magi/orchestrator.py
+magi/ui_layouts.py
 magi_system.egg-info/PKG-INFO
 magi_system.egg-info/SOURCES.txt
 magi_system.egg-info/dependency_links.txt

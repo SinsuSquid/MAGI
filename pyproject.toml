@@ -23,8 +23,8 @@ dependencies = [
 ]
 
 [project.scripts]
-magi = "magi_system:main"
+magi = "magi.magi_system:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["magi_system.py", "config.py", "ui_layouts.py", "orchestrator.py", "main.py"]
+include = ["magi*"]

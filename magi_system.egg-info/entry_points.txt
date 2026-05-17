@@ -1,2 +1,2 @@
 [console_scripts]
-magi = magi_system:main
+magi = magi.magi_system:main
