@@ -1,7 +1,7 @@
 # 🔮 MAGI System: Tactical Consensus Engine
 
 > **SUPERCOMPUTER STRATEGY SYSTEM - NERV HQ**
-> *DAEJEON GEOFRONT KR*
+> *CLASSIFIED GEOFRONT LOCATION*
 
 ![NERV](https://img.shields.io/badge/NERV-HQ-red?style=for-the-badge)
 ![Status](https://img.shields.io/badge/STATUS-OPERATIONAL-orange?style=for-the-badge)

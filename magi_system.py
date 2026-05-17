@@ -65,7 +65,7 @@ def get_command_center_display():
 [/bold {NERV_RED}]
 """
     status_text = Text()
-    status_text.append("\n[LOCAL NODE: DAEJEON_GEOFRONT_KR]\n", style=f"bold {NERV_AMBER}")
+    status_text.append("\n[LOCAL NODE: NERV_HQ_GEOFRONT]\n", style=f"bold {NERV_AMBER}")
     status_text.append("──────────────────────────────────────\n", style=f"{NERV_AMBER} dim")
     
     sync_msg = (
