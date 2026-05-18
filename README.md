@@ -23,24 +23,29 @@
 ![Status](https://img.shields.io/badge/STATUS-OPERATIONAL-orange?style=for-the-badge)
 ![Sync](https://img.shields.io/badge/SYNC-100%25-green?style=for-the-badge)
 
-A high-fidelity terminal implementation of the **MAGI Supercomputer** from Neon Genesis Evangelion. This system uses three distinct LLM personas (Melchior, Balthasar, and Casper) to evaluate tactical dilemmas and reach a consensus through parallel neural synchronization.
+A high-fidelity terminal implementation of the **MAGI Supercomputer** from Neon Genesis Evangelion. This system runs on a simulated **7th Generation Personality Transplant OS**, using three distinct LLM personas (Melchior, Balthasar, and Casper) to evaluate tactical dilemmas through parallel neural synchronization.
 
 ![MAGI Interface](screenshots/Screenshot1.png)
 
-## 🕹️ Visual Interface (NERV Aesthetic)
+## 🧠 The Core Tech: Personality Transplant OS
 
-The MAGI system features a specialized TUI (Terminal User Interface) designed with a strict NERV tactical blueprint:
+MAGI is not just running standard code; it simulates a **7th Generation Personality Transplant OS**. In the lore, Dr. Naoko Akagi digitized three distinct, conflicting facets of her own human psyche into three separate biomechanical brains. The system solves complex logical dilemmas by simulating human internal conflict, proving that a little bit of chaos is required for perfect logic!
 
-- **NERV CRT Palette:** Authentic Hex colors (#ff9900 Amber, #00ff66 Green, #ff0033 Red).
-- **Tactical Dashboard:** Real-time side-by-side core analysis with dynamic "color-snapping" feedback.
-- **Command Center:** Geofront telemetry logs, Triple-Core Sync status, and A.T. Field defense monitoring.
-- **Aggressive Geometry:** Sharp `box.SQUARE` military-grade paneling.
+### 🗂️ The Three Brains (The Trilemma)
 
-## 🧠 The Three Cores
+| Core Name | Naoko's Persona | Core Motivation & Bias | Role in NERV |
+| :--- | :--- | :--- | :--- |
+| **Melchior-1** | **The Scientist** | Pure logic, factual analysis, and scientific truth. | Analyzes Angel attack patterns and tactical probability. |
+| **Balthasar-2** | **The Mother** | Empathy, protection, and preservation of life. | Prioritizes defensive strategies, base security, and pilot safety. |
+| **Casper-3** | **The Woman** | Emotion, intuition, selfishness, and survival instinct. | Acts as the wildcard, prioritizing human desire and self-preservation. |
 
-1. **MAGI-1: MELCHIOR (Scientist):** Purely logical, analytical, and data-driven. Optimized for high-precision technical evaluation.
-2. **MAGI-2: BALTHASAR (Mother):** Empathetic, human-centric, and ethical. Balanced reasoning for well-being and safety.
-3. **MAGI-3: CASPER (Woman):** Bold, intuitive, independent, and risk-taking. High-perplexity "maverick" intuition.
+## ⚖️ The Consensus Mechanism
+
+Instead of a single CPU crunching numbers, MAGI arrives at decisions through a high-speed digital debate.
+
+- **The Debate Protocol:** When a strategic choice is needed, the three brains process the data through their specific personality filters and argue with each other at lightspeed to find the most optimal path forward.
+- **Majority Rule:** For standard operations or defense tactics, a simple **2-to-1 majority vote** (CODE 02) is enough to execute a command.
+- **The Absolute Veto:** For critical actions (like triggering the self-destruct sequence), the vote must be a **3-0 unanimous consensus** (CODE 01). If even one brain dissents (usually Casper!), the command fails entirely (CODE 03).
 
 ## 🛠️ Quantization Architecture
 
