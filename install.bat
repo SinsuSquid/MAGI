@@ -44,14 +44,22 @@ if %errorlevel% equ 0 (
     echo    - All cores share a single base 'llama3' model.
     echo    - High performance, unique persona logic, minimal footprint.
     echo    - Storage Required: ~5.0 GB
+    echo.
+    echo 3] Neural Link Scan [Check existing cores]
+    echo    - Verifies if MAGI cores are already initialized.
     echo --------------------------------------------------
-    set /p mode="Select tactical mode [1 or 2, default 2]: "
+    set /p mode="Select tactical mode [1, 2, or 3, default 2]: "
 
     if "%mode%"=="1" (
         echo Executing NERV Elite Deployment...
         ollama create melchior -f melchior.modelfile
         ollama create balthasar -f balthasar.modelfile
         ollama create casper -f casper.modelfile
+        echo Neural Cores synchronized!
+    ) else if "%mode%"=="3" (
+        echo Initiating Neural Link Scan...
+        ollama list | findstr "melchior balthasar casper" || echo No MAGI cores detected.
+        echo Scan complete.
     ) else (
         echo Executing NERV Standard Deployment [Using llama3 base]...
         ollama pull llama3
@@ -70,8 +78,8 @@ if %errorlevel% equ 0 (
         powershell -Command "(Get-Content casper.modelfile) -replace '^FROM .*', 'FROM llama3' | Set-Content temp_c.modelfile"
         ollama create casper -f temp_c.modelfile
         del temp_c.modelfile
+        echo Neural Cores synchronized!
     )
-    echo Neural Cores synchronized!
 ) else (
     echo [33mWarning: Ollama not found. Please install Ollama and run:[0m
     echo   ollama create melchior -f melchior.modelfile

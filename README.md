@@ -73,6 +73,7 @@ Run the automated installer to set up dependencies and initialize the specialize
 **Deployment Modes:**
 - **Mode 1: NERV Elite (Full Tactical Sync):** Pulls 3 unique quantization levels (q8_0, q4_K_M, q3_K_L) for maximum persona authenticity. (Heavy ~15.0 GB)
 - **Mode 2: NERV Standard (Single-Model Sync):** Uses a single base `llama3` model for all cores. High performance with a minimal footprint. (Light ~5.0 GB)
+- **Mode 3: Neural Link Scan:** Verifies if the MAGI cores are already initialized in Ollama.
 
 ### Execution
 Launch the interactive Command Center:

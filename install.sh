@@ -44,14 +44,22 @@ if command -v ollama &> /dev/null; then
     echo "   - All cores share a single base 'llama3' model."
     echo "   - High performance, unique persona logic, minimal footprint."
     echo "   - Storage Required: ~5.0 GB"
+    echo ""
+    echo "3) Neural Link Scan (Check existing cores)"
+    echo "   - Verifies if MAGI cores are already initialized."
     echo "--------------------------------------------------"
-    read -p "Select tactical mode [1 or 2, default 2]: " mode
+    read -p "Select tactical mode [1, 2, or 3, default 2]: " mode
 
     if [ "$mode" == "1" ]; then
         echo "Executing NERV Elite Deployment..."
         ollama create melchior -f melchior.modelfile
         ollama create balthasar -f balthasar.modelfile
         ollama create casper -f casper.modelfile
+        echo "Neural Cores synchronized!"
+    elif [ "$mode" == "3" ]; then
+        echo "Initiating Neural Link Scan..."
+        ollama list | grep -E 'melchior|balthasar|casper' || echo "No MAGI cores detected."
+        echo "Scan complete."
     else
         echo "Executing NERV Standard Deployment (Using llama3 base)..."
         ollama pull llama3
@@ -64,8 +72,8 @@ if command -v ollama &> /dev/null; then
         
         echo "Creating Casper core..."
         sed 's/FROM .*/FROM llama3/' casper.modelfile | ollama create casper -f -
+        echo "Neural Cores synchronized!"
     fi
-    echo "Neural Cores synchronized!"
 else
     echo "⚠️  Warning: Ollama not found. Please install Ollama and run:"
     echo "  ollama create melchior -f melchior.modelfile"
