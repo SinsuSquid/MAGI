@@ -32,32 +32,38 @@ fi
 
 echo "Initializing MAGI Neural Cores in Ollama..."
 if command -v ollama &> /dev/null; then
-    echo "Deployment Mode Selector:"
-    echo "  1) Full Tactical Sync (Unique Quants - Heavy Storage ~15GB)"
-    echo "  2) Standard Sync (Single Quant - Light Storage ~5GB) [Default]"
-    read -p "Select mode [1 or 2]: " mode
+    echo "--------------------------------------------------"
+    echo "DEPLOYMENT MODE SELECTOR"
+    echo "--------------------------------------------------"
+    echo "1) NERV Elite (Full Tactical Sync)"
+    echo "   - Melchior (q8_0), Balthasar (q4_K_M), Casper (q3_K_L)"
+    echo "   - Best experience, highest persona differentiation."
+    echo "   - Storage Required: ~15.0 GB"
+    echo ""
+    echo "2) NERV Standard (Single-Model Sync) [RECOMMENDED]"
+    echo "   - All cores share a single base 'llama3' model."
+    echo "   - High performance, unique persona logic, minimal footprint."
+    echo "   - Storage Required: ~5.0 GB"
+    echo "--------------------------------------------------"
+    read -p "Select tactical mode [1 or 2, default 2]: " mode
 
     if [ "$mode" == "1" ]; then
-        echo "Executing Full Tactical Sync..."
+        echo "Executing NERV Elite Deployment..."
         ollama create melchior -f melchior.modelfile
         ollama create balthasar -f balthasar.modelfile
         ollama create casper -f casper.modelfile
     else
-        echo "Executing Standard Sync (Using llama3 base)..."
+        echo "Executing NERV Standard Deployment (Using llama3 base)..."
         ollama pull llama3
-        # Create personas using the standard llama3 to save space
-        ollama create melchior -f - <<EOF
-FROM llama3
-SYSTEM "$(grep -A 10 'SYSTEM """' melchior.modelfile | sed '1d;$d')"
-EOF
-        ollama create balthasar -f - <<EOF
-FROM llama3
-SYSTEM "$(grep -A 10 'SYSTEM """' balthasar.modelfile | sed '1d;$d')"
-EOF
-        ollama create casper -f - <<EOF
-FROM llama3
-SYSTEM "$(grep -A 10 'SYSTEM """' casper.modelfile | sed '1d;$d')"
-EOF
+        
+        echo "Creating Melchior core..."
+        sed 's/FROM .*/FROM llama3/' melchior.modelfile | ollama create melchior -f -
+        
+        echo "Creating Balthasar core..."
+        sed 's/FROM .*/FROM llama3/' balthasar.modelfile | ollama create balthasar -f -
+        
+        echo "Creating Casper core..."
+        sed 's/FROM .*/FROM llama3/' casper.modelfile | ollama create casper -f -
     fi
     echo "Neural Cores synchronized!"
 else

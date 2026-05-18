@@ -32,25 +32,44 @@ if exist requirements.txt (
 echo Initializing MAGI Neural Cores in Ollama...
 where ollama >nul 2>nul
 if %errorlevel% equ 0 (
-    echo Deployment Mode Selector:
-    echo   1] Full Tactical Sync [Unique Quants - Heavy Storage ~15GB]
-    echo   2] Standard Sync [Single Quant - Light Storage ~5GB]
-    set /p mode="Select mode [1 or 2, default 2]: "
+    echo --------------------------------------------------
+    echo DEPLOYMENT MODE SELECTOR
+    echo --------------------------------------------------
+    echo 1] NERV Elite [Full Tactical Sync]
+    echo    - Melchior [q8_0], Balthasar [q4_K_M], Casper [q3_K_L]
+    echo    - Best experience, highest persona differentiation.
+    echo    - Storage Required: ~15.0 GB
+    echo.
+    echo 2] NERV Standard [Single-Model Sync] - RECOMMENDED
+    echo    - All cores share a single base 'llama3' model.
+    echo    - High performance, unique persona logic, minimal footprint.
+    echo    - Storage Required: ~5.0 GB
+    echo --------------------------------------------------
+    set /p mode="Select tactical mode [1 or 2, default 2]: "
 
     if "%mode%"=="1" (
-        echo Executing Full Tactical Sync...
+        echo Executing NERV Elite Deployment...
         ollama create melchior -f melchior.modelfile
         ollama create balthasar -f balthasar.modelfile
         ollama create casper -f casper.modelfile
     ) else (
-        echo Executing Standard Sync [Using llama3 base]...
+        echo Executing NERV Standard Deployment [Using llama3 base]...
         ollama pull llama3
-        REM We use simple FROM llama3 to save space, keeping the personas unique
-        ollama create melchior -f melchior.modelfile
-        ollama create balthasar -f balthasar.modelfile
-        ollama create casper -f casper.modelfile
-        echo NOTE: Windows install uses modelfiles which might trigger pulls if not edited. 
-        echo For true space saving, Melchior/Balthasar/Casper should be manually edited to FROM llama3.
+        
+        echo Creating Melchior core...
+        powershell -Command "(Get-Content melchior.modelfile) -replace '^FROM .*', 'FROM llama3' | Set-Content temp_m.modelfile"
+        ollama create melchior -f temp_m.modelfile
+        del temp_m.modelfile
+        
+        echo Creating Balthasar core...
+        powershell -Command "(Get-Content balthasar.modelfile) -replace '^FROM .*', 'FROM llama3' | Set-Content temp_b.modelfile"
+        ollama create balthasar -f temp_b.modelfile
+        del temp_b.modelfile
+        
+        echo Creating Casper core...
+        powershell -Command "(Get-Content casper.modelfile) -replace '^FROM .*', 'FROM llama3' | Set-Content temp_c.modelfile"
+        ollama create casper -f temp_c.modelfile
+        del temp_c.modelfile
     )
     echo Neural Cores synchronized!
 ) else (
