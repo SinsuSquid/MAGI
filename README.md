@@ -71,8 +71,8 @@ Run the automated installer to set up dependencies and initialize the specialize
 - **Windows:** `install.bat`
 
 **Deployment Modes:**
-- **Full Tactical Sync:** Pulls 3 unique quants for maximum persona differentiation (Heavy ~15GB).
-- **Standard Sync:** Uses a single base `llama3` for all cores to save storage (Light ~5GB).
+- **Mode 1: NERV Elite (Full Tactical Sync):** Pulls 3 unique quantization levels (q8_0, q4_K_M, q3_K_L) for maximum persona authenticity. (Heavy ~15.0 GB)
+- **Mode 2: NERV Standard (Single-Model Sync):** Uses a single base `llama3` model for all cores. High performance with a minimal footprint. (Light ~5.0 GB)
 
 ### Execution
 Launch the interactive Command Center:
