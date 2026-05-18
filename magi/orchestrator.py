@@ -1,38 +1,41 @@
 import threading
 import re
+import time
 import ollama
 from config import SYSTEM_PROMPTS, CORE_MODELS
 
 def parse_vote(text):
     """Robustly parse the vote from the text."""
-    if "[VOTE: APPROVE]" in text:
+    if re.search(r'VOTE:\s*APPROVE', text, re.IGNORECASE):
         return "APPROVE"
-    if "[VOTE: REJECT]" in text:
+    if re.search(r'VOTE:\s*REJECT', text, re.IGNORECASE):
         return "REJECT"
-    match = re.search(r'\[VOTE:\s*(APPROVE|REJECT)\]', text, re.IGNORECASE)
-    if match:
-        return match.group(1).upper()
     return "REJECT"
 
 def query_core(core_name, prompt, core_data):
     """Worker function to query a single MAGI core and update shared data."""
     try:
-        core_data[core_name]["text"] = "Calculating neural pathways..."
-        response = ollama.chat(
+        full_text = ""
+        stream = ollama.chat(
             model=CORE_MODELS.get(core_name, 'llama3'),
             messages=[
                 {'role': 'system', 'content': SYSTEM_PROMPTS[core_name]},
                 {'role': 'user', 'content': prompt}
-            ]
+            ],
+            stream=True
         )
-        full_text = response['message']['content']
-        vote = parse_vote(full_text)
         
-        # Clean the text for display (remove the vote instruction)
-        clean_text = re.sub(r'\[VOTE:.*?\]', '', full_text).strip()
-        
-        core_data[core_name]["text"] = clean_text
-        core_data[core_name]["vote"] = vote
+        for chunk in stream:
+            content = chunk['message']['content']
+            full_text += content
+            
+            # Clean the text for display (remove the vote instruction)
+            clean_text = re.sub(r'\[?VOTE:\s*(APPROVE|REJECT)\]?', '', full_text, flags=re.IGNORECASE).strip()
+            
+            core_data[core_name]["text"] = clean_text
+            time.sleep(0.01) # Anime drama delay
+            
+        core_data[core_name]["vote"] = parse_vote(full_text)
     except Exception as e:
         core_data[core_name]["text"] = f"CORE ERROR: {str(e)}"
         core_data[core_name]["vote"] = "REJECT"

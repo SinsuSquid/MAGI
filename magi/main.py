@@ -20,26 +20,34 @@ core_data = {
 def query_core(core_name, user_query):
     """Worker thread that talks to local Ollama and updates the global state."""
     try:
-        response = ollama.chat(
+        full_text = ""
+        stream = ollama.chat(
             model=CORE_MODELS.get(core_name, 'llama3'),
             messages=[
                 {'role': 'system', 'content': SYSTEM_PROMPTS[core_name]},
                 {'role': 'user', 'content': user_query}
-            ]
+            ],
+            stream=True
         )
         
-        full_text = response['message']['content']
+        for chunk in stream:
+            content = chunk['message']['content']
+            full_text += content
+            
+            # Standardize parser: Strip out raw vote text in real-time
+            display_text = re.sub(r'\[?VOTE:\s*(APPROVE|REJECT)\]?', '', full_text, flags=re.IGNORECASE).strip()
+            core_data[core_name]["text"] = display_text
+            
+            # Anime Drama: Typewriter effect
+            time.sleep(0.01)
         
-        # Parse out the vote logic for the UI colors
-        if "[VOTE: APPROVE]" in full_text:
-            core_data[core_name]["vote"] = "APPROVE" # ui_layouts.py handles the color/icon
-            core_data[core_name]["text"] = full_text.replace("[VOTE: APPROVE]", "").strip()
-        elif "[VOTE: REJECT]" in full_text:
+        # Final Parse out the vote logic for the UI colors
+        if re.search(r'VOTE:\s*APPROVE', full_text, re.IGNORECASE):
+            core_data[core_name]["vote"] = "APPROVE"
+        elif re.search(r'VOTE:\s*REJECT', full_text, re.IGNORECASE):
             core_data[core_name]["vote"] = "REJECT"
-            core_data[core_name]["text"] = full_text.replace("[VOTE: REJECT]", "").strip()
         else:
             core_data[core_name]["vote"] = "REJECT" # Default/Error
-            core_data[core_name]["text"] = full_text
             
     except Exception as e:
         core_data[core_name]["vote"] = "ERROR"
@@ -50,11 +58,11 @@ def calculate_final_verdict():
     approves = sum(1 for data in core_data.values() if data["vote"] == "APPROVE")
     
     if approves == 3:
-        return "[bold green]OPERATION APPROVED (3-0 UNANIMOUS)[/bold green]"
+        return "[bold green]🟢 OPERATION APPROVED (3-0 UNANIMOUS)[/bold green]"
     elif approves == 2:
-        return "[bold yellow]PROCEED WITH CAUTION (2-1 MAJORITY)[/bold yellow]"
+        return "[bold yellow]🟡 PROCEED WITH CAUTION (2-1 MAJORITY)[/bold yellow]"
     else:
-        return "[bold red]OPERATION REJECTED (INSUFFICIENT CONSENSUS)[/bold red]"
+        return "[bold red]❌ OPERATION REJECTED (INSUFFICIENT CONSENSUS)[/bold red]"
 
 def run_magi():
     while True:

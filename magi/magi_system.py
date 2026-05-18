@@ -172,28 +172,40 @@ def update_magi_screen(layout: Layout, query: str, final_verdict: str = "SYNCHRO
     layout["footer"].update(Panel(footer_text, title=f"[bold {NERV_AMBER}]🤖 CONSENSUS ENGINE[/bold {NERV_AMBER}]", border_style=NERV_AMBER, box=box.SQUARE))
 
 def query_core(core_name: str, user_query: str):
-    core_data[core_name]["text"] = "Calculating neural pathways...\nQuerying local model..."
+    core_data[core_name]["text"] = ""
     core_data[core_name]["vote"] = "PROCESSING..."
     core_data[core_name]["color"] = NERV_AMBER
     try:
-        response = ollama.chat(model=CORE_MODELS.get(core_name, 'llama3'), messages=[{'role': 'system', 'content': SYSTEM_PROMPTS[core_name]}, {'role': 'user', 'content': user_query}])
-        full_text = response['message']['content'].strip()
+        full_text = ""
+        stream = ollama.chat(
+            model=CORE_MODELS.get(core_name, 'llama3'), 
+            messages=[{'role': 'system', 'content': SYSTEM_PROMPTS[core_name]}, {'role': 'user', 'content': user_query}],
+            stream=True
+        )
         
-        # Aggressive vote detection: search for APPROVE or REJECT anywhere in the text
-        # Even if the model adds extra text or changes spacing
-        if re.search(r'\[VOTE:\s*APPROVE\s*\]', full_text, re.IGNORECASE) or "VOTE: APPROVE" in full_text.upper():
+        for chunk in stream:
+            content = chunk['message']['content']
+            full_text += content
+            
+            # Standardize parser: Strip out raw vote text in real-time for symmetry
+            # Using an aggressive regex to catch variants like [VOTE: APPROVE] or VOTE: APPROVE
+            display_text = re.sub(r'\[?VOTE:\s*(APPROVE|REJECT)\]?', '', full_text, flags=re.IGNORECASE).strip()
+            core_data[core_name]["text"] = display_text
+            
+            # Anime Drama: Typewriter effect delay
+            time.sleep(0.02)
+        
+        # Final vote detection and color snapping
+        if re.search(r'VOTE:\s*APPROVE', full_text, re.IGNORECASE):
             core_data[core_name]["vote"] = "🟢 APPROVED"
             core_data[core_name]["color"] = NERV_GREEN
-        elif re.search(r'\[VOTE:\s*REJECT\s*\]', full_text, re.IGNORECASE) or "VOTE: REJECT" in full_text.upper():
+        elif re.search(r'VOTE:\s*REJECT', full_text, re.IGNORECASE):
             core_data[core_name]["vote"] = "🔴 REJECTED"
             core_data[core_name]["color"] = NERV_RED
         else:
             core_data[core_name]["vote"] = "🔴 REJECTED (FORMAT ERROR)"
             core_data[core_name]["color"] = NERV_RED
-        
-        # Clean up text for display: remove the vote tag and any surrounding clutter
-        clean_text = re.sub(r'\[VOTE:.*?\]', '', full_text, flags=re.IGNORECASE).strip()
-        core_data[core_name]["text"] = clean_text
+            
     except Exception as e:
         core_data[core_name]["vote"] = "💥 SYSTEM CRASH"
         core_data[core_name]["color"] = NERV_RED
@@ -202,7 +214,7 @@ def query_core(core_name: str, user_query: str):
 def calculate_final_verdict() -> str:
     approves = sum(1 for core in core_data.values() if "🟢" in core["vote"])
     if approves == 3:
-        return f"[bold {NERV_GREEN}]🔴 CODE 01: UNANIMOUS CONSENSUS (3-0) - OPERATION APPROVED[/bold {NERV_GREEN}]"
+        return f"[bold {NERV_GREEN}]🟢 CODE 01: UNANIMOUS CONSENSUS (3-0) - OPERATION APPROVED[/bold {NERV_GREEN}]"
     elif approves == 2:
         return f"[bold {NERV_AMBER}]🟡 CODE 02: MAJORITY DECISION (2-1) - PROCEED WITH CAUTION[/bold {NERV_AMBER}]"
     else:
