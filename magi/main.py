@@ -5,7 +5,7 @@ from rich.live import Live
 from rich.console import Console
 from rich.prompt import Prompt
 from ui_layouts import make_magi_layout, update_magi_screen
-from config import MAGI_HEADER, SYSTEM_PROMPTS
+from config import MAGI_HEADER, SYSTEM_PROMPTS, CORE_MODELS
 
 console = Console()
 
@@ -21,7 +21,7 @@ def query_core(core_name, user_query):
     """Worker thread that talks to local Ollama and updates the global state."""
     try:
         response = ollama.chat(
-            model='llama3',
+            model=CORE_MODELS.get(core_name, 'llama3'),
             messages=[
                 {'role': 'system', 'content': SYSTEM_PROMPTS[core_name]},
                 {'role': 'user', 'content': user_query}

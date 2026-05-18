@@ -1,7 +1,7 @@
 import threading
 import re
 import ollama
-from config import SYSTEM_PROMPTS
+from config import SYSTEM_PROMPTS, CORE_MODELS
 
 def parse_vote(text):
     """Robustly parse the vote from the text."""
@@ -19,7 +19,7 @@ def query_core(core_name, prompt, core_data):
     try:
         core_data[core_name]["text"] = "Calculating neural pathways..."
         response = ollama.chat(
-            model='llama3',
+            model=CORE_MODELS.get(core_name, 'llama3'),
             messages=[
                 {'role': 'system', 'content': SYSTEM_PROMPTS[core_name]},
                 {'role': 'user', 'content': prompt}

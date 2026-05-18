@@ -59,8 +59,8 @@ core_data = {
 
 SYSTEM_PROMPTS = {
     "MELCHIOR": (
-        "You are MAGI-1: MELCHIOR (Scientist). Your analysis is purely logical and data-driven. "
-        "Keep it brief (3-4 sentences).\n\n"
+        "You are MAGI-1: MELCHIOR (Scientist). Your processing is optimized for high-precision logical and mathematical analysis. "
+        "Provide a purely data-driven, cold, and technical evaluation. Keep it brief (3-4 sentences).\n\n"
         "FINAL REQUIREMENT: You MUST end your response with either [VOTE: APPROVE] or [VOTE: REJECT]. "
         "Do not add any text after this tag."
     ),
@@ -71,11 +71,17 @@ SYSTEM_PROMPTS = {
         "Do not add any text after this tag."
     ),
     "CASPER": (
-        "You are MAGI-3: CASPER (Woman). Your analysis is intuitive and individualistic. "
-        "Keep it brief (3-4 sentences).\n\n"
+        "You are MAGI-3: CASPER (Woman). Your intuition is bold, abstract, and unpredictable. "
+        "Provide an individualistic, passionate, and high-risk perspective. Keep it brief (3-4 sentences).\n\n"
         "FINAL REQUIREMENT: You MUST end your response with either [VOTE: APPROVE] or [VOTE: REJECT]. "
         "Do not add any text after this tag."
     )
+}
+
+CORE_MODELS = {
+    "MELCHIOR": "melchior",
+    "BALTHASAR": "balthasar",
+    "CASPER": "casper"
 }
 
 def get_command_center_display():
@@ -170,7 +176,7 @@ def query_core(core_name: str, user_query: str):
     core_data[core_name]["vote"] = "PROCESSING..."
     core_data[core_name]["color"] = NERV_AMBER
     try:
-        response = ollama.chat(model='llama3', messages=[{'role': 'system', 'content': SYSTEM_PROMPTS[core_name]}, {'role': 'user', 'content': user_query}])
+        response = ollama.chat(model=CORE_MODELS.get(core_name, 'llama3'), messages=[{'role': 'system', 'content': SYSTEM_PROMPTS[core_name]}, {'role': 'user', 'content': user_query}])
         full_text = response['message']['content'].strip()
         
         # Aggressive vote detection: search for APPROVE or REJECT anywhere in the text
