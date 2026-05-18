@@ -16,7 +16,6 @@ try:
     from rich.table import Table
     from rich import box
     from prompt_toolkit import PromptSession
-    from prompt_toolkit.enums import EditingMode
     from prompt_toolkit.styles import Style as PromptStyle
 except ImportError:
     print("❌ CRITICAL ERROR: Missing dependencies!")
@@ -58,12 +57,25 @@ core_data = {
     "CASPER": {"text": "Awaiting input...", "vote": "STANDBY", "color": NERV_AMBER}
 }
 
-VOTE_INSTRUCTION = "\n\nCRITICAL INSTRUCTION: At the absolute end of your response, you MUST output exactly either [VOTE: APPROVE] or [VOTE: REJECT]."
-
 SYSTEM_PROMPTS = {
-    "MELCHIOR": "You are MAGI-1: MELCHIOR. You are logical, scientific, and practical. Keep your analysis brief (3-4 sentences)." + VOTE_INSTRUCTION,
-    "BALTHASAR": "You are MAGI-2: BALTHASAR. You are empathetic, protective, and human-centric. Keep your analysis brief (3-4 sentences)." + VOTE_INSTRUCTION,
-    "CASPER": "You are MAGI-3: CASPER. You are bold, risk-taking, and individualistic. Keep your analysis brief (3-4 sentences)." + VOTE_INSTRUCTION
+    "MELCHIOR": (
+        "You are MAGI-1: MELCHIOR (Scientist). Your analysis is purely logical and data-driven. "
+        "Keep it brief (3-4 sentences).\n\n"
+        "FINAL REQUIREMENT: You MUST end your response with either [VOTE: APPROVE] or [VOTE: REJECT]. "
+        "Do not add any text after this tag."
+    ),
+    "BALTHASAR": (
+        "You are MAGI-2: BALTHASAR (Mother). Your analysis is empathetic and ethical. "
+        "Keep it brief (3-4 sentences).\n\n"
+        "FINAL REQUIREMENT: You MUST end your response with either [VOTE: APPROVE] or [VOTE: REJECT]. "
+        "Do not add any text after this tag."
+    ),
+    "CASPER": (
+        "You are MAGI-3: CASPER (Woman). Your analysis is intuitive and individualistic. "
+        "Keep it brief (3-4 sentences).\n\n"
+        "FINAL REQUIREMENT: You MUST end your response with either [VOTE: APPROVE] or [VOTE: REJECT]. "
+        "Do not add any text after this tag."
+    )
 }
 
 def get_command_center_display():
@@ -120,7 +132,7 @@ def make_magi_layout() -> Layout:
     layout.split_column(
         Layout(name="header", size=3),
         Layout(name="body", ratio=1),
-        Layout(name="footer", size=4)
+        Layout(name="footer", size=6)
     )
     layout["body"].split_row(
         Layout(name="melchior"),
@@ -129,7 +141,7 @@ def make_magi_layout() -> Layout:
     )
     return layout
 
-def update_magi_screen(layout: Layout, query: str, final_verdict: str = "SYNCHRONIZING CORES..."):
+def update_magi_screen(layout: Layout, query: str, final_verdict: str = "SYNCHRONIZING CORES...", show_prompt: bool = False):
     header_text = Text(f"MAGI SYSTEM ACTIVE | CODE: 00 | DILEMMA: \"{query}\"", style=f"bold {NERV_AMBER}", justify="center")
     layout["header"].update(Panel(header_text, border_style=NERV_AMBER, box=box.SQUARE))
     
@@ -147,6 +159,10 @@ def update_magi_screen(layout: Layout, query: str, final_verdict: str = "SYNCHRO
         )
     
     footer_text = Text.from_markup(final_verdict, justify="center")
+    if show_prompt:
+        footer_text.append("\n")
+        footer_text.append(">> PRESS ENTER TO ACKNOWLEDGE VERDICT <<", style=f"blink bold {NERV_WHITE}")
+        
     layout["footer"].update(Panel(footer_text, title=f"[bold {NERV_AMBER}]🤖 CONSENSUS ENGINE[/bold {NERV_AMBER}]", border_style=NERV_AMBER, box=box.SQUARE))
 
 def query_core(core_name: str, user_query: str):
@@ -156,18 +172,22 @@ def query_core(core_name: str, user_query: str):
     try:
         response = ollama.chat(model='llama3', messages=[{'role': 'system', 'content': SYSTEM_PROMPTS[core_name]}, {'role': 'user', 'content': user_query}])
         full_text = response['message']['content'].strip()
-        if "[VOTE: APPROVE]" in full_text:
+        
+        # Aggressive vote detection: search for APPROVE or REJECT anywhere in the text
+        # Even if the model adds extra text or changes spacing
+        if re.search(r'\[VOTE:\s*APPROVE\s*\]', full_text, re.IGNORECASE) or "VOTE: APPROVE" in full_text.upper():
             core_data[core_name]["vote"] = "🟢 APPROVED"
             core_data[core_name]["color"] = NERV_GREEN
-            core_data[core_name]["text"] = re.sub(r'\[VOTE:.*?\]', '', full_text).strip()
-        elif "[VOTE: REJECT]" in full_text:
+        elif re.search(r'\[VOTE:\s*REJECT\s*\]', full_text, re.IGNORECASE) or "VOTE: REJECT" in full_text.upper():
             core_data[core_name]["vote"] = "🔴 REJECTED"
             core_data[core_name]["color"] = NERV_RED
-            core_data[core_name]["text"] = re.sub(r'\[VOTE:.*?\]', '', full_text).strip()
         else:
             core_data[core_name]["vote"] = "🔴 REJECTED (FORMAT ERROR)"
             core_data[core_name]["color"] = NERV_RED
-            core_data[core_name]["text"] = full_text
+        
+        # Clean up text for display: remove the vote tag and any surrounding clutter
+        clean_text = re.sub(r'\[VOTE:.*?\]', '', full_text, flags=re.IGNORECASE).strip()
+        core_data[core_name]["text"] = clean_text
     except Exception as e:
         core_data[core_name]["vote"] = "💥 SYSTEM CRASH"
         core_data[core_name]["color"] = NERV_RED
@@ -198,11 +218,21 @@ def run_consensus(user_query: str):
         while any(t.is_alive() for t in threads):
             update_magi_screen(layout, user_query)
             time.sleep(0.1)
+        
         final_verdict = calculate_final_verdict()
-        update_magi_screen(layout, user_query, final_verdict)
+        update_magi_screen(layout, user_query, final_verdict, show_prompt=True)
+        live.refresh()
+        input()
+        
         return final_verdict
 
+def set_terminal_title(title: str):
+    """Sets the terminal window/tab title using ANSI escape sequences."""
+    sys.stdout.write(f"\033]0;{title}\a")
+    sys.stdout.flush()
+
 def main():
+    set_terminal_title("🔮 MAGI SUPERCOMPUTER - NERV HQ")
     parser = argparse.ArgumentParser(description="MAGI Supercomputer Strategy System")
     parser.add_argument("-p", "--prompt", type=str, help="Dilemma to process directly via command line")
     args = parser.parse_args()
@@ -224,7 +254,7 @@ def main():
         return
 
     # Initialize prompt_toolkit session for interactive mode
-    session = PromptSession(editing_mode=EditingMode.VI)
+    session = PromptSession()
     prompt_style = PromptStyle.from_dict({
         'prompt': f'bold {NERV_AMBER}',
         'input': NERV_WHITE,
@@ -234,7 +264,6 @@ def main():
         console.clear()
         console.print(get_command_center_display())
         console.print(f"\n[bold {NERV_AMBER}]🔮 Initialize MAGI System Prompt Sequence...[/bold {NERV_AMBER}]")
-        console.print(f"[dim {NERV_WHITE}](Vim mode active: Press Esc for command mode)[/dim {NERV_WHITE}]")
         
         try:
             user_query = session.prompt(
@@ -265,10 +294,6 @@ def main():
             continue
 
         final_verdict = run_consensus(user_query)
-        
-        # In interactive mode, we wait for input to keep the result on screen
-        print(f"\n[bold {NERV_WHITE}]Press Enter to continue...[/bold {NERV_WHITE}]")
-        input()
 
 if __name__ == "__main__":
     main()

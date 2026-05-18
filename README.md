@@ -45,9 +45,8 @@ The MAGI system features a specialized TUI (Terminal User Interface) designed wi
 
 ## ⌨️ Advanced Input
 
-The neural link is optimized for high-speed tactical entry with **Vim-style keybindings** (powered by `prompt_toolkit`).
-- Press `Esc` for Command Mode.
-- Standard Vim navigation and editing commands supported.
+The neural link is optimized for high-speed tactical entry powered by `prompt_toolkit`.
+- Standard terminal navigation and editing commands supported.
 
 ## 🚀 Deployment
 
