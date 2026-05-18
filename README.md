@@ -38,9 +38,17 @@ The MAGI system features a specialized TUI (Terminal User Interface) designed wi
 
 ## 🧠 The Three Cores
 
-1. **MAGI-1: MELCHIOR (Scientist):** Purely logical, analytical, and data-driven.
-2. **MAGI-2: BALTHASAR (Mother):** Empathetic, human-centric, and ethical.
-3. **MAGI-3: CASPER (Woman):** Bold, intuitive, independent, and risk-taking.
+1. **MAGI-1: MELCHIOR (Scientist):** Purely logical, analytical, and data-driven. Optimized for high-precision technical evaluation.
+2. **MAGI-2: BALTHASAR (Mother):** Empathetic, human-centric, and ethical. Balanced reasoning for well-being and safety.
+3. **MAGI-3: CASPER (Woman):** Bold, intuitive, independent, and risk-taking. High-perplexity "maverick" intuition.
+
+## 🛠️ Quantization Architecture
+
+The system utilizes specialized quantization levels for each persona to enhance their unique behavioral profiles:
+
+- **Melchior (High Precision):** Uses `q8_0` for maximum logical consistency and technical fidelity.
+- **Balthasar (Standard):** Uses `q4_K_M` for balanced, nuanced ethical reasoning.
+- **Casper (Chaos Mode):** Uses `q3_K_L`. Higher perplexity introduces the creative, unconventional variables essential for Casper's "Woman" persona.
 
 ## ⌨️ Advanced Input
 
@@ -51,12 +59,15 @@ The neural link is optimized for high-speed tactical entry powered by `prompt_to
 
 ### Prerequisites
 - [Ollama](https://ollama.com/) installed and running.
-- Llama 3 model pulled: `ollama pull llama3`.
 
-### Installation
-```bash
-pip install ollama rich prompt_toolkit
-```
+### Tactical Installation (Recommended)
+Run the automated installer to set up dependencies and initialize the specialized neural cores:
+- **Linux/macOS:** `bash install.sh`
+- **Windows:** `install.bat`
+
+**Deployment Modes:**
+- **Full Tactical Sync:** Pulls 3 unique quants for maximum persona differentiation (Heavy ~15GB).
+- **Standard Sync:** Uses a single base `llama3` for all cores to save storage (Light ~5GB).
 
 ### Execution
 Launch the interactive Command Center:
@@ -65,11 +76,11 @@ magi
 ```
 
 **Tactical Bypass (Single Query):**
-Run a dilemma directly from the shell without entering the loop:
+Run a dilemma directly from the shell:
 ```bash
 magi --prompt "Should I skip sleep tonight to finish coding?"
 ```
-*Or use the short flag:* `magi -p "..."`
+*Short flag:* `magi -p "..."`
 
 ## 📊 Consensus Codes
 - **CODE 01:** UNANIMOUS CONSENSUS (3-0) - OPERATION APPROVED
