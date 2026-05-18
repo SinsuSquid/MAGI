@@ -32,9 +32,9 @@ def update_magi_screen(layout, query, core_data, final_verdict=None):
     
     # Core mappings for styling
     core_styles = {
-        "MELCHIOR": {"title": "🤖 MAGI-1: MELCHIOR (Logic)", "color": "cyan"},
+        "MELCHIOR": {"title": "🤖 MAGI-1: MELCHIOR (Scientist)", "color": "cyan"},
         "BALTHASAR": {"title": "💖 MAGI-2: BALTHASAR (Mother)", "color": "magenta"},
-        "CASPER": {"title": "🔥 MAGI-3: CASPER (Individual)", "color": "orange3"}
+        "CASPER": {"title": "🔥 MAGI-3: CASPER (Woman)", "color": "orange3"}
     }
     
     for core_id, style in core_styles.items():

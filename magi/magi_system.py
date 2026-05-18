@@ -146,9 +146,9 @@ def update_magi_screen(layout: Layout, query: str, final_verdict: str = "SYNCHRO
     layout["header"].update(Panel(header_text, border_style=NERV_AMBER, box=box.SQUARE))
     
     for core_name, core_id, title in [
-        ("MELCHIOR", "melchior", "🤖 MAGI-1: MELCHIOR (LOGIC)"),
+        ("MELCHIOR", "melchior", "🤖 MAGI-1: MELCHIOR (SCIENTIST)"),
         ("BALTHASAR", "balthasar", "💖 MAGI-2: BALTHASAR (MOTHER)"),
-        ("CASPER", "casper", "🔥 MAGI-3: CASPER (INDIVIDUAL)")
+        ("CASPER", "casper", "🔥 MAGI-3: CASPER (WOMAN)")
     ]:
         data = core_data[core_name]
         content = Text()
