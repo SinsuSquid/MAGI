@@ -1,6 +1,9 @@
 #!/bin/bash
-
-# install.sh - Installer for MAGI (Linux/macOS)
+# ======================================
+#   MAGI Python Project Installer
+#   Platform: Linux / macOS
+#   Repository: https://github.com/SinsuSquid/MAGI
+# ======================================
 
 set -e
 
