@@ -25,7 +25,12 @@
 
 A high-fidelity terminal implementation of the **MAGI Supercomputer** from Neon Genesis Evangelion. This system runs on a simulated **7th Generation Personality Transplant OS**, using three distinct LLM personas (Melchior, Balthasar, and Casper) to evaluate tactical dilemmas through parallel neural synchronization.
 
-![MAGI Interface](screenshots/Screenshot1.png)
+## 🖥️ Interface Gallery
+
+| 1. Tactical Command Center | 2. Dynamic Core Selector | 3. Multi-Turn Debate Scrollback |
+| :---: | :---: | :---: |
+| ![Command Center](screenshots/Screenshot1.png) | ![Core Selector](screenshots/Screenshot2.png) | ![Debate Scrollback](screenshots/Screenshot3.png) |
+
 
 ## 🧠 The Core Tech: Personality Transplant OS
 
