@@ -24,8 +24,10 @@ fi
 
 echo "Installing dependencies..."
 if [ -f requirements.txt ]; then
-    pip install --upgrade pip
-    pip install -r requirements.txt
+    pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org --upgrade pip
+    pip install --trusted-host pypi.org --trusted-host files.pythonhosted.org -r requirements.txt
+    # pip install --upgrade pip
+    # pip install -r requirements.txt
 else
     echo "No requirements.txt found. Skipping dependency installation."
 fi

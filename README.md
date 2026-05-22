@@ -2,7 +2,7 @@
 
 ```text
 ╭──────────────────────────────────────────────────────────────────────────────╮
-│ 🔴 [SYS.AUTH: SENPAI_ADMIN]                    [NET_STATUS: FULL_TELEMETRY]  │
+│ 🔴 [SYS.AUTH: SYSTEM_ADMIN]                    [NET_STATUS: FULL_TELEMETRY]  │
 ├───────────────────────────────────┬──────────────────────────────────────────┤
 │                                   │                                          │
 │  ███╗   ███╗ █████╗  ██████╗ ██╗  │  [LOCAL NODE: NERV_HQ_GEOFRONT]          │
@@ -59,6 +59,40 @@ The system utilizes specialized quantization levels for each persona to enhance 
 
 The neural link is optimized for high-speed tactical entry powered by `prompt_toolkit`.
 - Standard terminal navigation and editing commands supported.
+
+## 💬 Stateful Multi-Turn Chat & Continuous Scrollback
+
+The MAGI system now supports continuous debate dialogs and stateful multi-turn history.
+- **Neural Link Memory:** Cores maintain conversation history so you can type follow-up questions to query details of their decision logic or ask for clarification.
+- **Continuous Scrollback:** Instead of clearing your terminal screen after a consensus is resolved, the main debate runs inside the alternate terminal buffer (using `rich.live`), and prints a permanent NERV tactical report to standard scrollback upon close. The prompt for your next dilemma appears right below!
+- **Interactive Shortcuts:**
+  - Type `config` or `settings` to open the Model Configuration menu.
+  - Type `reset` or `/reset` to completely flush history memory and reset the console layout.
+
+## ⚙️ Dynamic Model Configuration
+
+You can dynamically override the model files mapped to each of the three neural cores directly in the interactive console!
+- **Command Shortcut:** Type `config` inside the interactive console.
+- **Configuration Modes:**
+  - **Specialized Cores:** Uses Naoko Akagi's specific cores (`melchior`, `balthasar`, `casper`) with customized system prompt and parameters.
+  - **Single Base Model:** Select any locally installed Ollama model (e.g. `llama3`, `gemma`) to serve as the base model for all three cores (preserving their distinct persona prompts and temperatures).
+- **Persistence:** Selections are automatically saved to `~/.magi_config.json`.
+
+## 📦 PyInstaller Standalone Binary Compilation
+
+MAGI can be compiled into a single, standalone executable binary:
+1. Install requirements and pyinstaller in your environment:
+   ```bash
+   pip install pyinstaller
+   ```
+2. Build the executable:
+   ```bash
+   pyinstaller --onefile --name magi magi/magi_system.py
+   ```
+3. Run the standalone binary:
+   ```bash
+   ./dist/magi
+   ```
 
 ## 🚀 Deployment
 

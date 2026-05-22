@@ -12,3 +12,6 @@ venv.bak/
 .idea/
 GEMINI.md
 PLAN.md
+build/
+dist/magi
+*.spec
